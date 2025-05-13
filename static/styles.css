@@ -50,3 +50,16 @@ h1 {
     margin-right: 150px;
     text-align: center;
 }
+
+.download-btn-area {
+    margin-top: 10px;
+    margin-left: 150px;
+    margin-right: 150px;
+    text-align: center;
+}
+
+.btn-download {
+    font-size: 15px;
+    height: 35px;
+    width: 150px;
+}
