@@ -16,4 +16,5 @@ function downloadImage() {
 }
 
 const btn = document.getElementById("btn-dl");
+
 btn.addEventListener('click', downloadImage)

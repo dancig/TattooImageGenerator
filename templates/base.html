@@ -9,16 +9,18 @@
 
 <h1>Генератор изображений татуировок</h1>
 
-<form method="post">
+<form method="post" id="form">
     <div class="fb-1">
         <label for="prompt" class="form-label">Введите текстовый запрос:</label>
     </div>
     <div class="fb-2">
-        <textarea class="form-text" id="prompt" name="prompt" required maxlength="500">{{last_prompt}}</textarea>
+        <textarea class="form-text" id="prompt" name="prompt" required maxlength="500"
+                  placeholder="Введите текстовое описание изображения">{{last_prompt}}</textarea>
     </div>
     <div class="fb-3">
-        <button type="submit" class="btn-submit">Сгенерировать</button>
+        <button type="submit" class="btn-submit" id="btn-sb">Сгенерировать</button>
     </div>
+    <script src="{{ url_for('static', filename='validate.js') }}"></script>
 </form>
 
 {% if image %}
