@@ -14,13 +14,18 @@ translator = TranslatorModule()
 @app.route("/", methods=['GET', 'POST'])
 def home():
     if request.method == 'POST':
-        prompt = request.form["prompt"]
-        translated_prompt = translator.translate_text(prompt)
-        print(translated_prompt)
-        image = imageGen.generate_image(translated_prompt)
-        image.save("static/images/image.png")
-        saved_image = os.path.join(app.config["UPLOAD_FOLDER"], "image.png")
-        return render_template('base.html', last_prompt=prompt, image=saved_image)
+        if imageGen.isBusy == False:
+            imageGen.isBusy = True
+            prompt = request.form["prompt"]
+            translated_prompt = translator.translate_text(prompt)
+            print(translated_prompt)
+            image = imageGen.generate_image(translated_prompt)
+            image.save("static/images/image.png")
+            saved_image = os.path.join(app.config["UPLOAD_FOLDER"], "image.png")
+            imageGen.isBusy = False
+            return render_template('base.html', last_prompt=prompt, image=saved_image)
+        else:
+            return render_template('base.html', last_prompt=request.form["prompt"], isBusy=True)
     else:
         return render_template('base.html')
 

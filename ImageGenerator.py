@@ -3,6 +3,7 @@ from diffusers import DiffusionPipeline
 
 
 class ImageGenerator:
+    isBusy = False
 
     def __init__(self):
         self.sd_pipeline = DiffusionPipeline.from_pretrained("./stable-diffusion-v1-5", torch_dtype=torch.bfloat16,
