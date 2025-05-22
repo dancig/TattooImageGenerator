@@ -20,18 +20,21 @@ translator = TranslatorModule()
 @app.route("/", methods=['GET', 'POST'])
 def home():
     if request.method == 'POST':
-        if imageGen.isBusy == False:    # Запрос "POST" и модуль генерации не занят
-            imageGen.isBusy = True
-            prompt = request.form["prompt"]
-            translated_prompt = translator.translate_text(prompt)   # Перевод текстового запроса на английский
-            print(translated_prompt)
-            image = imageGen.generate_image(translated_prompt)      # Генерация изображения по текстовому запросу
-            image.save("static/images/image.png")                   # Сохранение сгенерированного изображения
-            saved_image = os.path.join(app.config["UPLOAD_FOLDER"], "image.png")
-            imageGen.isBusy = False
-            return render_template('base.html', last_prompt=prompt, image=saved_image)
+        if ("prompt" in request.form) and (len(request.form["prompt"]) <= 500) and (len(request.form["prompt"]) > 0):
+            if imageGen.isBusy == False:    # Запрос "POST" и модуль генерации не занят
+                imageGen.isBusy = True
+                prompt = request.form["prompt"]
+                translated_prompt = translator.translate_text(prompt)   # Перевод текстового запроса на английский
+                print(translated_prompt)
+                image = imageGen.generate_image(translated_prompt)      # Генерация изображения по текстовому запросу
+                image.save("static/images/image.png")                   # Сохранение сгенерированного изображения
+                saved_image = os.path.join(app.config["UPLOAD_FOLDER"], "image.png")
+                imageGen.isBusy = False
+                return render_template('base.html', last_prompt=prompt, image=saved_image)
+            else:
+                return render_template('base.html', last_prompt=request.form["prompt"], isBusy=True)
         else:
-            return render_template('base.html', last_prompt=request.form["prompt"], isBusy=True)
+            return render_template('base.html', last_prompt="", isBadPrompt=True)
     else:
         return render_template('base.html')
 

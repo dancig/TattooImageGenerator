@@ -23,6 +23,12 @@
     <script src="{{ url_for('static', filename='validate.js') }}"></script>
 </form>
 
+{% if isBadPrompt %}
+<script>
+    alert("Некорректный ввод.");
+</script>
+{% endif %}
+
 {% if isBusy %}
 <script>
     alert("Попробуйте позже.");
