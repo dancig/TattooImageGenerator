@@ -1,20 +1,12 @@
 // Функция сохранения сгенерированного изображения
-// Возвращает значение True, если изображение успешно сохранено, иначе возвращает False
+// Сохраняет сгенерированное изображение на устройство пользователя
 function downloadImage() {
-    try {
-        const link = document.createElement('a');
-        link.href = 'static/images/image.png';      // Путь к сгенерированному изображению
-        link.download = 'image.png';                // Имя сохраняемого файла
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        console.log("Image downloaded");
-        return true;
-    }
-    catch(error) {
-        console.log(error);
-        return false;
-    }
+    const link = document.createElement('a');
+    link.href = document.getElementById("img").src;         // Путь к сгенерированному изображению
+    link.download = document.getElementById("img").src;     // Имя сохраняемого файла
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
 
 const btn = document.getElementById("btn-dl");
