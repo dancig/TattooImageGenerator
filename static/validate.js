@@ -3,7 +3,9 @@
 // Возвращает значение True, если строка содержит только слова на кириллице или латинице и цифры,
 // Иначе возращает значение False
 function validateText(text) {
-    return /([А-Яа-я0-9]+\s?)+|([A-Za-z0-9]+\s?)+/.test(text)
+	if (text.length == 0)
+		return false;
+    return /^(([А-Яа-я]+\s)||([A-Za-z]+\s)|([А-Яа-я]+$)|([A-Za-z]+$)|([0-9]+\s)|([0-9]+$))+$/.test(text)
 }
 
 const form = document.getElementById("form");
