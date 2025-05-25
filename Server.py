@@ -41,6 +41,7 @@ def process_requests():
             prompt = request.form["prompt"]
             translated_prompt = translator.translate_text(prompt)  # Перевод текстового запроса на английский
             print(translated_prompt)
+            translated_prompt = "Tattoo" + translated_prompt    # Добавить к промту слово Tattoo
             image = imageGen.generate_image(translated_prompt)  # Генерация изображения по текстовому запросу
             filename = time.strftime("%Y_%m_%d_%H%M%S", time.localtime(time.time()))    # Название файла -
                                                                                         # текущая дата и время
