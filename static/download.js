@@ -15,7 +15,8 @@ async function downloadImage(img_path) {
 		document.body.removeChild(link);
 		return true;
     }
-    else
+    else	// Файл не существует
+		alert("Ошибка при сохранении изображения.");
 		return false;
 }
 
