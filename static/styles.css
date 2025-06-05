@@ -45,20 +45,45 @@ h1 {
 }
 
 .image-area {
-    margin-top: 30px;
+    margin-top: 25px;
     margin-left: 150px;
     margin-right: 150px;
-    text-align: center;
+    display: flex;
+    justify-content: space-around;
 }
 
-.download-btn-area {
-    margin-top: 10px;
-    margin-left: 150px;
-    margin-right: 150px;
-    text-align: center;
+.image-btn {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
 }
 
-.btn-download {
+.image-btn-no-bg {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+}
+
+.img {
+    border: 5px double black;
+}
+
+.img-no-bg {
+    border: 5px double black;
+    background-color: white;
+}
+
+.image-btn .btn-download-img {
+    align-self: center;
+    margin-top:10px;
+    font-size: 15px;
+    height: 35px;
+    width: 150px;
+}
+
+.image-btn-no-bg .btn-download-img-no-bg {
+    align-self: center;
+    margin-top:10px;
     font-size: 15px;
     height: 35px;
     width: 150px;

@@ -20,9 +20,15 @@ async function downloadImage(img_path) {
 		return false;
 }
 
-const btn = document.getElementById("btn-dl");
-const path = document.getElementById("img").src;
+const btn_img = document.getElementById("btn-dl-img");
+const path_img = document.getElementById("img").src;
+const btn_img_no_bg = document.getElementById("btn-dl-img-no-bg");
+const path_img_no_bg = document.getElementById("img-no-bg").src;
 
-btn.addEventListener('click', function() {  // При нажатии на кнопку "Сохранить" вызывается функция
-    downloadImage(path)                     // сохранения сгенерированного изображения изображения
+btn_img.addEventListener('click', function() {  // При нажатии на кнопку "Сохранить" вызывается функция
+    downloadImage(path_img);                    // сохранения сгенерированного изображения изображения
+});
+
+btn_img_no_bg.addEventListener('click', function() {    // Сохранение изображения без фона
+    downloadImage(path_img_no_bg);
 });
