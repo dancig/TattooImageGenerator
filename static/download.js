@@ -4,31 +4,38 @@
 // Возвращает true, если файл существует и сохранен
 // Если файл не существует, то возвращает false
 async function downloadImage(img_path) {
-	let response = await fetch(img_path);	// Проверка существования файла
+	// Проверка существования файла
+	let response = await fetch(img_path);
     if (response.ok) {
 		// Файл существует		
 		const link = document.createElement('a');
-		link.href = img_path;         // Путь к сгенерированному изображению
-		link.download = img_path;     // Имя сохраняемого файла
+		// Путь к сгенерированному изображению
+		link.href = img_path;
+		// Имя сохраняемого файла
+		link.download = img_path;
 		document.body.appendChild(link);
 		link.click();
 		document.body.removeChild(link);
 		return true;
     }
-    else	// Файл не существует
+    else
+        // Файл не существует
 		alert("Ошибка при сохранении изображения.");
 		return false;
 }
 
 const btn_img = document.getElementById("btn-dl-img");
-const path_img = document.getElementById("img").src;
+const path_img = document.getElementById("img");
 const btn_img_no_bg = document.getElementById("btn-dl-img-no-bg");
-const path_img_no_bg = document.getElementById("img-no-bg").src;
+const path_img_no_bg = document.getElementById("img-no-bg");
 
-btn_img.addEventListener('click', function() {  // При нажатии на кнопку "Сохранить" вызывается функция
-    downloadImage(path_img);                    // сохранения сгенерированного изображения изображения
+// При нажатии на кнопку "Сохранить" вызывается функция
+// сохранения сгенерированного изображения изображения
+btn_img.addEventListener('click', function() {
+    downloadImage(path_img.src);
 });
 
-btn_img_no_bg.addEventListener('click', function() {    // Сохранение изображения без фона
-    downloadImage(path_img_no_bg);
+// Сохранение изображения без фона
+btn_img_no_bg.addEventListener('click', function() {
+    downloadImage(path_img_no_bg.src);
 });

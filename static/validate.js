@@ -11,9 +11,12 @@ function validateText(text) {
 const form = document.getElementById("form");
 const textarea = document.getElementById("prompt");
 
-form.addEventListener("submit", function(event) {   // При отправке формы вызывается функция валидации текста формы
+// При отправке формы вызывается функция валидации текста формы
+form.addEventListener("submit", function() {
+    // Если текст запроса не прошел валидацию отправка формы отменяется
+    // На экран выводится диалог о некорректном вводе
     if (!validateText(textarea.value)) {
-        event.preventDefault();                     // Если текст запроса не прошел валидацию отправка формы отменяется
-        alert("Некорректный ввод");                 // На экран выводится диалог о некорректном вводе
+        event.preventDefault();
+        alert("Некорректный ввод");
     }
 });

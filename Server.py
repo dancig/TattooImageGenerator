@@ -9,8 +9,6 @@ import time
 import traceback
 
 app = Flask(__name__)
-images_folder = os.path.join('static', 'images')
-app.config["UPLOAD_FOLDER"] = images_folder
 
 # Функция парсинга аргументов
 # Возвращает объект с аргументами
@@ -19,7 +17,7 @@ def parse_arguments():
 
     # Путь к директории с моделью генерации изображений
     parser.add_argument('--model_path',
-                        required=True,
+                        default='./stable-diffusion-v1-5',
                         type=str,
                         help='Path to diffusion model folder')
 
@@ -71,15 +69,9 @@ def parse_arguments():
 
     # Название файла весов LoRA
     parser.add_argument('--lora_filename',
-                        default='TattooSketch-10.safetensors',
+                        default='pytorch_lora_weights.safetensors',
                         type=str,
-                        help='LoRA filename (default="TattooSketch-10.safetensors")')
-
-    # Пороговое значение для удаления фона со сгенерированного изображения
-    parser.add_argument('--threshold',
-                        default=40,
-                        type=int,
-                        help='White background removing threshold [0-255] (default=40)')
+                        help='LoRA filename (default="pytorch_lora_weights.safetensors")')
 
     # Использование модуля перевода текста
     parser.add_argument('--translator',
@@ -88,9 +80,12 @@ def parse_arguments():
                         help='Enable translator module (default=True)')
     return parser.parse_args()
 
+
 # Функция обработки запросов
 # Возвращает страницу "base.html", если запрос "GET"
 # Если метод запроса не "POST", то возвращается шаблон "base.html"
+# Если формат запроса JSON, то удаляется задний фон изображения, по заданным в JSON параметрам,
+# возвращается JSON файл с путем к файлу без заднего фона
 # Если текстовой строки нет в запросе или длина строки превышает 500 символов или длина меньше или равна нулю, то
 # возвращается шаблон "base.html" с аргументами last_prompt = "" и isBadPrompt=True
 # Если модуль генерации изображений занят, то возвращается шаблон "base.html" с аргументами last_prompt=текстовый запрос
@@ -107,6 +102,29 @@ def process_requests():
         # Если метод не "POST"
         if request.method != 'POST':
             return render_template('base.html')
+
+        # Если запрос в формате JSON
+        if request.is_json == True:
+            try:
+                # Получить JSON данные из запроса
+                remove_bg_data = request.get_json()
+                print(remove_bg_data)
+                # Выделить из пути к файлу название файла
+                src_filename = remove_bg_data['path'][-21:-4]
+                # Удалить задний фон
+                imageProcessor.remove_background(images_folder,
+                                                 src_filename,
+                                                 int(remove_bg_data['threshold']),
+                                                 remove_bg_data['erode'],
+                                                 remove_bg_data['dilate'])
+                saved_image_no_bg = os.path.join(app.config["UPLOAD_FOLDER"], f"{src_filename}_no_bg.png")
+                # Возвратить JSON с путем к файлу без заднего фона
+                return {'image': saved_image_no_bg}, 200
+            except Exception:
+                traceback.print_exc()
+                # Возвратить ошибку 404
+                return {'error': 'background removing error'}, 404
+
 
         # Если текстовый запрос не прошел валидацию
         if ("prompt" not in request.form) or (len(request.form["prompt"]) > 500) or (len(request.form["prompt"]) <= 0):
@@ -144,12 +162,9 @@ def process_requests():
             image.save(f"static/images/{filename}.png")
             saved_image = os.path.join(app.config["UPLOAD_FOLDER"], f"{filename}.png")
 
-            imageProcessor.remove_background(images_folder, filename)
-            saved_image_no_bg = os.path.join(app.config["UPLOAD_FOLDER"], f"{filename}_no_bg.png")
             return render_template('base.html',
                                    last_prompt=request.form["prompt"],
-                                   image=saved_image,
-                                   image_no_bg=saved_image_no_bg)
+                                   image=saved_image)
         # Ошибка произошла на этапе обработки запроса
         except Exception:
             traceback.print_exc()
@@ -164,20 +179,21 @@ def process_requests():
                                last_prompt="",
                                error=True)
 
+images_folder = os.path.join('static', 'images')
+app.config["UPLOAD_FOLDER"] = images_folder
+args = parse_arguments()
+steps = args.steps
+keyword = args.keyword
+enable_translator = args.translator
+imageGen = ImageGenerator(args.model_path, args.torchtype, args.variant, args.safetensors, args.safetychecker)
+
+# Если модуль LoRA включен
+if args.lora == True:
+    imageGen.load_lora(args.lora_path, args.lora_filename)
+    print(f"LoRA weight loaded from {args.lora_path}/{args.lora_filename}")
+
+translator = TranslatorModule()
+imageProcessor = ImageProcessor()
 
 if __name__ == "__main__":
-    args = parse_arguments()
-    steps = args.steps
-    keyword = args.keyword
-    enable_translator = args.translator
-    imageGen = ImageGenerator(args.model_path, args.torchtype, args.variant, args.safetensors, args.safetychecker)
-
-    # Если модуль LoRA включен
-    if args.lora == True:
-        imageGen.load_lora(args.lora_path, args.lora_filename)
-        print(f"LoRA weight loaded from {args.lora_path}/{args.lora_filename}")
-
-    translator = TranslatorModule()
-    imageProcessor = ImageProcessor()
-
     app.run(debug=False)

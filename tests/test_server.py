@@ -2,23 +2,26 @@ import pytest
 from Server import app
 from Server import imageGen
 
+
 @pytest.fixture()
 def testapp():
-    testapp = app
-    yield testapp
+
+    yield app
 
 
 @pytest.fixture()
 def client(testapp):
     return testapp.test_client()
 
+
 # Запрос GET с адресом '/123'
 # Модуль генерации изображений не занят
 # Должен возвращаться ответ с кодом 404
-def test_process_request_1(client):
+def test_process_request_1(testapp, client):
     imageGen.isBusy = False
     response = client.get("/123")
     assert response.status_code == 404
+
 
 # Запрос GET с адресом '/'
 # Модуль генерации изображений не занят
@@ -29,6 +32,7 @@ def test_process_request_2(client):
     assert response.status_code == 200
     assert "<h1>Генератор изображений татуировок</h1>" in response.data.decode()
 
+
 # Запрос POST с адресом '/'
 # Модуль генерации изображений не занят
 # Должен возвращаться ответ с начальной страницей, ошибкой некорректоного ввода и кодом 200
@@ -38,6 +42,7 @@ def test_process_request_3(client):
     assert response.status_code == 200
     assert "Некорректный ввод." in response.data.decode()
 
+
 # Запрос POST с адресом '/' и данными запроса {'prompt'= пустая строка}
 # Модуль генерации изображений не занят
 # Должен возвращаться ответ с начальной страницей, ошибкой некорректоного ввода и кодом 200
@@ -46,6 +51,7 @@ def test_process_request_4(client):
     response = client.post("/", data={'prompt': ""})
     assert response.status_code == 200
     assert "Некорректный ввод." in response.data.decode()
+
 
 # Запрос POST с адресом '/' и данными запроса {'prompt'= строка с 501 символом}
 # Модуль генерации изображений не занят
@@ -63,6 +69,7 @@ def test_process_request_5(client):
     assert response.status_code == 200
     assert "Некорректный ввод." in response.data.decode()
 
+
 # Запрос POST с адресом '/' и данными запроса {'prompt'= "image"}
 # Модуль генерации изображений занят
 # Должен возвращаться ответ с начальной страницей, просьбой попробовать позже и кодом 200
@@ -71,6 +78,7 @@ def test_process_request_6(client, testapp):
     response = client.post("/", data={'prompt': "image"})
     assert response.status_code == 200
     assert "Попробуйте позже." in response.data.decode()
+
 
 # Запрос POST с адресом '/' и данными запроса {'prompt'= "image of a cat"}
 # Модуль генерации изображений не занят
@@ -81,6 +89,7 @@ def test_process_request_7(client):
     assert response.status_code == 200
     assert "СгенерированноеИзображение" in response.data.decode()
 
+
 # Запрос POST с адресом '/' и данными запроса {'prompt'= "Изображение кота"}
 # Модуль генерации изображений не занят
 # Должен возвращаться ответ со страницей после генерации изображения и кодом 200
@@ -89,6 +98,7 @@ def test_process_request_8(client):
     response = client.post("/", data={'prompt': "Изображение кота"})
     assert response.status_code == 200
     assert "СгенерированноеИзображение" in response.data.decode()
+
 
 # Запрос POST с адресом '/' и данными запроса {'prompt'= строка с 500 символов}
 # Модуль генерации изображений не занят
@@ -106,6 +116,7 @@ def test_process_request_9(client):
     assert response.status_code == 200
     assert "СгенерированноеИзображение" in response.data.decode()
 
+
 # Запрос POST с адресом '/' и данными запроса {'prompt'= "Изображение числа 8"}
 # Модуль генерации изображений не занят
 # Должен возвращаться ответ со страницей после генерации изображения и кодом 200
@@ -114,3 +125,20 @@ def test_process_request_10(client):
     response = client.post("/", data={'prompt': "Изображение числа 8"})
     assert response.status_code == 200
     assert "СгенерированноеИзображение" in response.data.decode()
+
+
+def test_process_request_11(client):
+    response = client.post("/", json={'path': 'http://127.0.0.1:5000/static/images/2025_06_06_161638.png',
+                                      'threshold': '40',
+                                      'erode': 'false',
+                                      'dilate': 'true'})
+    assert response.status_code == 200
+    assert response.json['image'] == 'static\\images\\2025_06_06_161638_no_bg.png'
+
+
+def test_process_request_12(client):
+    response = client.post("/", json={'path': 'http://127.0.0.1:5000/static/images/image.png',
+                                      'threshold': '40',
+                                      'erode': 'false',
+                                      'dilate': 'true'})
+    assert response.status_code == 404

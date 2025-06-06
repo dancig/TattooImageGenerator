@@ -58,6 +58,31 @@ h1 {
     align-content: center;
 }
 
+.bg-remove-settings {
+    width: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.threshold-st {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.erosion-st {
+    margin-top: 10px;
+}
+
+.dilation-st {
+    margin-top: 10px;
+}
+
+.btn-remove-bg {
+    margin-top: 10px;
+}
+
 .image-btn-no-bg {
     display: flex;
     flex-direction: column;
