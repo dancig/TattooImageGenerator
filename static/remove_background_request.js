@@ -24,6 +24,7 @@ async function remove_background(img_path, threshold_value, erode, dilate) {
         let result = await response.json();
         await fetch(result.image, {cache: 'reload'})
         img_no_bg.src = result.image;
+        btn_download_no_bg.disabled = false;
     }
     else {
         alert('Ошибка удаления фона');
@@ -37,6 +38,7 @@ const erosion = document.getElementById("erosion");
 const dilation = document.getElementById("dilation");
 const threshold_label = document.getElementById("threshold-label");
 const btn_remove = document.getElementById("btn-rm-bg");
+const btn_download_no_bg = document.getElementById("btn-dl-img-no-bg");
 
 // При изменении ползунка изменяется подпись со значением
 threshold.addEventListener('input', function() {
